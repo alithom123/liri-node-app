@@ -1,0 +1,5 @@
+Liri
+CLI to get Spotify Songs.
+
+Client ID 1cece788870c44dd93ee1ba75313f349
+Client Secret 53c0e77758c44504936fc412612bd454
