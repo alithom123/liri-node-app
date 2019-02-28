@@ -1,0 +1,7 @@
+# OMDb API
+# Here is your key: 90c3533d
+# Please append it to all of your API requests,
+# OMDb API: http://www.omdbapi.com/?i=tt3896198&apikey=90c3533d
+# Click the following URL to activate your key: http://www.omdbapi.com/apikey.aspx?VERIFYKEY=8bc64cf3-8bbe-42f9-a207-12c85f4028ea
+
+OMDB_KEY=90c3533d

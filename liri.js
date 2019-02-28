@@ -1,11 +1,68 @@
 // Make a JavaScript file named liri.js.
 // At the top of the liri.js file, add code to read and set any environment variables with the dotenv package:
-require("dotenv").config();
+// require("dotenv").config();
 
 // Add the code required to import the keys.js file and store it in a variable.
-var keys = require("./keys.js");
+// var keys = require("./keys.js");
 // You should then be able to access your keys information like so
-var spotify = new Spotify(keys.spotify);
+// var spotify = new Spotify(keys.spotify);
+
+var axios = require("axios");
+var fs = require("fs");
+var Spotify = require('node-spotify-api');
+//module.exports = CastMember ???
+
+// axios.get('http://img.omdbapi.com/?i=tt3896198&r=json&apikey=90c3533d')
+axios.get('http://omdbapi.com/?i=tt3896198&r=json&apikey=90c3533d')
+    .then(function (response) {
+        console.log("SUCCESSFUL AXE");
+        console.log(response.data);
+        console.log(response.status);
+        console.log(response.headers);
+
+
+        // resultElement.innerHTML = generateSuccessHTMLOutput(response);
+    })
+    .catch(function (error) {
+        console.log("UNSUCCESSFUL AXE");
+        console.log(error);
+        // resultElement.innerHTML = generateErrorHTMLOutput(error);
+    });
+
+var spotify = new Spotify({
+    //     SPOTIFY_ID=1cece788870c44dd93ee1ba75313f349
+    // SPOTIFY_SECRET=53c0e77758c44504936fc412612bd454
+    id: "1cece788870c44dd93ee1ba75313f349",
+    secret: "53c0e77758c44504936fc412612bd454"
+});
+
+spotify.search({
+    type: 'track',
+    query: 'All the Small Things'
+}, function (err, data) {
+    if (err) {
+        return console.log('Error occurred: ' + err);
+    }
+
+    console.log(data);
+});
+
+
+
+// GET request for remote image
+// axios({
+//         method: 'get',
+//         // url: 'http://bit.ly/2mTM3nY',
+//         url: 'http://img.omdbapi.com/?t=Rookie+of+the+Year&apikey=90c3533d',
+//         // http://www.omdbapi.com/?i=tt3896198&apikey=90c3533d
+//         // responseType: 'stream'
+//     })
+//     .then(function (response) {
+//         console.log(response);
+//         // response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
+//     });
+
+
 
 
 // Make it so liri.js can take in one of the following commands:
