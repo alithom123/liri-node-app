@@ -1,11 +1,7 @@
-// Make a JavaScript file named liri.js.
-// At the top of the liri.js file, add code to read and set any environment variables with the dotenv package:
-// require("dotenv").config();
-
-// Add the code required to import the keys.js file and store it in a variable.
-// var keys = require("./keys.js");
-// You should then be able to access your keys information like so
-// var spotify = new Spotify(keys.spotify);
+// node liri.js spotify-this-song 'Take This Waltz'
+// node liri.js concert-this 'Dave Matthews Band'
+// node liri.js movie-this 'You Have Mail'
+// node liri.js do-what-it-says 
 
 var axios = require("axios");
 var fs = require("fs");
@@ -15,26 +11,17 @@ var Spotify = require('node-spotify-api');
 
 var action = process.argv[2];
 var value = process.argv[3];
+var startParameters = [action, value];
 
-// Spotify Variables
 var trackName = value;
-
-
-// node liri.js spotify-this-song '<song name here>'
-// Artist(s)
-// The song's name
-// A preview link of the song from Spotify
-// The album that the song is from
-// If no song is provided then your program will default to "The Sign" by Ace of Base.
+var movieName = value;
 
 var hitSpotify = function (_trackName) {
 
-    // Set fefault song if _trackName is empty.
+    // node liri.js spotify-this-song 'Sea of Heartbreak'
     if (!_trackName) _trackName = "The Sign";
 
     var spotify = new Spotify({
-        //     SPOTIFY_ID=1cece788870c44dd93ee1ba75313f349
-        // SPOTIFY_SECRET=53c0e77758c44504936fc412612bd454
         id: "1cece788870c44dd93ee1ba75313f349",
         secret: "53c0e77758c44504936fc412612bd454"
     });
@@ -47,68 +34,109 @@ var hitSpotify = function (_trackName) {
             return console.log('Error occurred: ' + err);
         }
 
-        console.log(`Artist: ${data.tracks.items[0].artists[0].name}`);
+        var output =
+            `
+                Artist: ${data.tracks.items[0].artists[0].name}
+                Album:    ${data.tracks.items[0].album.name}
+                Song:   ${data.tracks.items[0].name}
+                URL:    ${data.tracks.items[0].external_urls.spotify}
+            `;
 
-        // console.log(data);
-        console.log(data.tracks.items[0]);
-
+        console.log(output);
+        fs.appendFile('log.txt', output, function (err) {
+            if (err) throw err;
+            console.log('Saved in log!');
+        });
     });
 }
 
+var hitOmdb = function (movieName) {
 
-if (action) {
-
-    switch (action) {
-        case 'spotify-this-song':
-            hitSpotify(trackName);
-            break;
-        case 'concert-this':
-            // hitSpotify();
-            break;
-        case 'movie-this':
-            // hitSpotify();
-            break;
-        case 'do-what-it-says':
-            // hitSpotify();
-            break;
-    }
-} else {
-    printHelp();
-}
-
-var help = function printHelp() {
-    console.log(`
-                            Incorrect command format.Here are some samples:
-                            node liri.js spotify - this - song 'Take This Waltz'
-                            node liri.js concert - this 'Dave Matthews Band'
-                            node liri.js movie - this 'You Have Mail'
-                            node liri.js do -what - it - says `);
-};
-
-
-
-var hitAxios = function () {
-
-    // axios.get('http://img.omdbapi.com/?i=tt3896198&r=json&apikey=90c3533d')
-    axios.get('http://omdbapi.com/?i=tt3896198&r=json&apikey=90c3533d')
+    var movieParameter = movieName.split(' ').join('+');
+    axios.get(`http://omdbapi.com/?t=${movieParameter}&r=json&apikey=90c3533d`)
         .then(function (response) {
-            console.log("SUCCESSFUL AXE");
-            console.log(response.data);
-            console.log(response.status);
-            console.log(response.headers);
+            let output =
+                `
+                Title: ${
+                    response.data.Title
+                }
+                Year: ${
+                    response.data.Year
+                }
+                IMDB Rating: ${
+                    response.data.Ratings[0].Value
+                }
+                Rotten Tomatoes Rating: ${
+                    response.data.Ratings[1].Value
+                }
+                Country: ${
+                    response.data.Country
+                }
+                Language: ${
+                    response.data.Language
+                }
+                Actors: ${
+                    response.data.Actors
+                }
+                Plot: ${
+                    response.data.Plot
+                }
+                `;
 
-
-            // resultElement.innerHTML = generateSuccessHTMLOutput(response);
+            console.log(output);
+            fs.appendFile('log.txt', output, function (err) {
+                if (err) throw err;
+                console.log('Saved in log!');
+            });
         })
         .catch(function (error) {
-            console.log("UNSUCCESSFUL AXE");
             console.log(error);
-            // resultElement.innerHTML = generateErrorHTMLOutput(error);
         });
 }
 
+function runFromFile() {
+    fs.readFile('random.txt', 'utf8', function (err, data) {
+        console.log(data);
+        var runParameters = data.split(",");
+        run(runParameters);
+    });
+}
 
+var run = function (parameters) {
+    console.log("in run with parameters", parameters);
+    var action = parameters[0];
 
+    if (action) {
+
+        switch (action) {
+            case 'spotify-this-song':
+                hitSpotify(parameters[1]);
+                break;
+            case 'concert-this':
+                console.log("Sorry, I didn't finish that part yet!");
+                break;
+            case 'movie-this':
+                hitOmdb(parameters[1]);
+                break;
+            case 'do-what-it-says':
+                runFromFile();
+                break;
+        }
+    } else {
+        printHelp();
+    }
+
+    var help = function printHelp() {
+        console.log(`
+                Incorrect command format. Here are some samples:
+                node liri.js spotify-this-song 'Take This Waltz'
+                node liri.js concert-this 'Dave Matthews Band'
+                node liri.js movie-this 'You Have Mail'
+                node liri.js do-what-it-says `);
+    };
+}
+
+run(startParameters);
 // GET request for remote image
 // axios({
 //         method: 'get',
